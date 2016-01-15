@@ -69,10 +69,14 @@
                 android:layout_height="wrap_content" />
 
             <Switch
+                android:id="@+id/roullete"
                 android:text="Roullete Mode "
                 android:paddingTop="20dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:checked="false"
+                android:clickable="true" />
 
         </LinearLayout>
 

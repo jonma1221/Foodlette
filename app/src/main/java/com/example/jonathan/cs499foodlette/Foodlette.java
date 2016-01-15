@@ -8,8 +8,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Foodlette extends AppCompatActivity {
 
@@ -30,7 +33,6 @@ public class Foodlette extends AppCompatActivity {
         });
 
         SeekBar distanceSeekBar = (SeekBar)findViewById(R.id.distance);
-
         distanceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             TextView textView = (TextView) findViewById(R.id.distanceCovered);
             int progress = 0;
@@ -54,6 +56,7 @@ public class Foodlette extends AppCompatActivity {
 
 
         });
+
         SeekBar priceSeekBar = (SeekBar)findViewById(R.id.price);
         priceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
             TextView textView = (TextView) findViewById(R.id.priceCovered);
@@ -76,6 +79,18 @@ public class Foodlette extends AppCompatActivity {
 
             }
         });
+
+        Switch mySwitch = (Switch)findViewById(R.id.roullete);
+        mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    Toast.makeText(getApplicationContext(), R.string.roulleteOn,Toast.LENGTH_SHORT).show();
+                }
+                else Toast.makeText(getApplicationContext(), R.string.roulleteOff,Toast.LENGTH_SHORT).show();
+            }
+
+    });
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
