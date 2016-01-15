@@ -8,6 +8,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 public class Foodlette extends AppCompatActivity {
 
@@ -26,8 +28,55 @@ public class Foodlette extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-    }
 
+        SeekBar distanceSeekBar = (SeekBar)findViewById(R.id.distance);
+
+        distanceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            TextView textView = (TextView) findViewById(R.id.distanceCovered);
+            int progress = 0;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+                progress = progressValue;
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                textView.setText("Distance: " + progress + " miles" );
+
+            }
+
+
+        });
+        SeekBar priceSeekBar = (SeekBar)findViewById(R.id.price);
+        priceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+            TextView textView = (TextView) findViewById(R.id.priceCovered);
+            int progress = 0;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+                progress = progressValue;
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                textView.setText("Price: $" + progress );
+
+            }
+        });
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
