@@ -42,8 +42,8 @@ public class Foodlette extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 v.startAnimation(rotateAnime);
-                Intent intent = new Intent(Foodlette.this, result.class);
-                startActivity(intent);
+                /*Intent intent = new Intent(Foodlette.this, result.class);
+                startActivity(intent);*/
 
             }
         });
