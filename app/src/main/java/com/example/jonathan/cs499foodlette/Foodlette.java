@@ -2,6 +2,7 @@ package com.example.jonathan.cs499foodlette;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -42,9 +43,15 @@ public class Foodlette extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 v.startAnimation(rotateAnime);
-                /*Intent intent = new Intent(Foodlette.this, result.class);
-                startActivity(intent);*/
 
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(Foodlette.this, result.class);
+                        startActivity(intent);
+                    }
+                }, 2100);
             }
         });
 
