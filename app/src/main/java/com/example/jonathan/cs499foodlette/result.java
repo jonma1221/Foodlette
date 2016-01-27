@@ -37,6 +37,7 @@ public class result extends AppCompatActivity {
         String ratingUrl = getIntent().getStringExtra("ratingImg");
         String snippet = getIntent().getStringExtra("snippet");
 
+        if(phone == null) phone = "No number";
         String locationInfo =  address + "\n" + city + "\n" + state + ", " + zip + "\n" + phone + "\n";
 
         nameBiz = (TextView) findViewById(R.id.name);

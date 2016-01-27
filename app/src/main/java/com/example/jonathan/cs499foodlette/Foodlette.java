@@ -47,7 +47,7 @@ public class Foodlette extends AppCompatActivity {
     String location;
     String category;
     String msg = "";
-    String name,address,city,state,zip,phone,rating,url,mobileUrl,ratingImg,snippet,snippetImg,menu;
+    String id,name,address,city,state,zip,phone,rating,url,mobileUrl,ratingImg,snippet,snippetImg,menu;
     double distance;
     boolean toggle = false;
 
@@ -89,7 +89,7 @@ public class Foodlette extends AppCompatActivity {
                             service.signRequest(accessToken, request);
                             Response response = request.send();
                             String rawData = response.getBody();
-                            //Log.i("info", rawData);
+                            Log.i("info", rawData);
                             try {
                                 YelpSearchResult places = new Gson().fromJson(rawData, YelpSearchResult.class);
                                 msg += "Your search found " + places.getTotal() + " results.\n";
@@ -98,6 +98,7 @@ public class Foodlette extends AppCompatActivity {
                                 Random rand = new Random();
                                 int randomNumber = rand.nextInt(places.getBusinesses().size());
                                 Business business = places.getBusinesses().get(randomNumber);
+                                id = business.getId();
                                 name = business.getName();
                                 address = business.getLocation().getAddress().toString().substring(1, business.getLocation().getAddress().toString().length() - 1);
                                 city = business.getLocation().getCity();
@@ -110,7 +111,7 @@ public class Foodlette extends AppCompatActivity {
                                 ratingImg = business.getRating_img_url_large();
                                 snippet = business.getSnippet_text();
                                 snippetImg = business.getSnippet_image_url();
-
+                                Log.i("info",id);
                                 /*for(Business biz : places.getBusinesses()) {
                                     msg+= biz.getName() + "\n";
                                     for(String address : biz.getLocation().getAddress()) {
@@ -181,20 +182,26 @@ public class Foodlette extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     Toast.makeText(getApplicationContext(), R.string.rouletteOn, Toast.LENGTH_SHORT).show();
-                } else
+                    searchButton.setBackgroundResource(R.drawable.rr);
+                } else{
                     Toast.makeText(getApplicationContext(), R.string.rouletteOff, Toast.LENGTH_SHORT).show();
+                    searchButton.setBackgroundResource(R.drawable.roullete);
+                }
+
             }
 
         });
 
         // Retrieve selected category
         Spinner mySpinner = (Spinner)findViewById(R.id.category);
-        String[] items = new String[]{"bagels","bakeries","beer_and_wine","beverage_stores","breweries",
-                                      "bubbletea","churros","cideries", "coffee","cupcakes",
-                                      "desserts","restaurants"};
+        String[] items = new String[]{"bagels","bakeries","beer_and_wine","breweries",
+                                      "bubbletea","churros","coffee","cupcakes",
+                                      "delicatessen","desserts","foodtrucks",
+                                      "pizza","pretzels", "ramen","streetvendors",
+                                      "restaurants"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
         mySpinner.setAdapter(adapter);
-
+        mySpinner.setSelection(adapter.getPosition("restaurants"));
         mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
