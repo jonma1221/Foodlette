@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.jonathan.cs499foodlette">
-
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,6 +18,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".result"
             android:label="@string/title_activity_result"
@@ -25,7 +26,6 @@
 
             <intent-filter>
                 <action android:name="com.example.jonathan.cs499foodlette.result" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
     </application>

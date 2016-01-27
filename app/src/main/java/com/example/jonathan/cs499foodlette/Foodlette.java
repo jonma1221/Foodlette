@@ -3,23 +3,53 @@ package com.example.jonathan.cs499foodlette;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
+import org.scribe.builder.ServiceBuilder;
+import org.scribe.model.OAuthRequest;
+import org.scribe.model.Response;
+import org.scribe.model.Token;
+import org.scribe.model.Verb;
+import org.scribe.oauth.OAuthService;
+
+import java.util.Random;
+
 public class Foodlette extends AppCompatActivity {
+
+    final String CONSUMER_KEY = "XxsQ0t52VIaAtbW9y6o8TA";
+    final String CONSUMER_SECRET = "88THviX8OapVOhAF01OLxnqNV_c";
+    final String TOKEN = "gCPhJx8GzdO88RsHkbvv5eWozqLASiMB";
+    final String TOKEN_SECRET = "NOuj5IY2gfLpBNz5mg9h0HVfBYg";
+
+    ImageButton searchButton;
+    EditText editLocation;
+    SeekBar distanceSeekBar;
+
+    String location;
+    String category;
+    String msg = "";
+    String name,address,city,state,zip,phone,rating,url,mobileUrl,ratingImg,snippet,snippetImg,menu;
+    double distance;
+    boolean toggle = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,42 +58,109 @@ public class Foodlette extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        editLocation = (EditText) findViewById(R.id.location);
 
-        final Animation rotateAnime = AnimationUtils.loadAnimation(this,R.anim.rotate);
-        ImageButton searchButton = (ImageButton)findViewById(R.id.search);
+        final Animation rotateAnim = AnimationUtils.loadAnimation(this,R.anim.rotate);
+
+        searchButton = (ImageButton)findViewById(R.id.search);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                v.startAnimation(rotateAnime);
+                v.startAnimation(rotateAnim);
+                toggle = true ? false : true;
+                location = editLocation.getText().toString();
+                Log.i("info",location);
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            OAuthService service = new ServiceBuilder().provider(YelpV2API.class).apiKey(CONSUMER_KEY).apiSecret(CONSUMER_SECRET).build();
+                            Token accessToken = new Token(TOKEN, TOKEN_SECRET);
+                            OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/search");
+                            request.addQuerystringParameter("location", location);
+                            request.addQuerystringParameter("category_filter", category);
+                            request.addQuerystringParameter("radius_filter", "" + distance);
+                            request.addQuerystringParameter("sort", "1");
+                            if (toggle) {
+                                request.addQuerystringParameter("offset", "20");
+                            }
 
+                            request.addQuerystringParameter("limit", "20");
+                            service.signRequest(accessToken, request);
+                            Response response = request.send();
+                            String rawData = response.getBody();
+                            //Log.i("info", rawData);
+                            try {
+                                YelpSearchResult places = new Gson().fromJson(rawData, YelpSearchResult.class);
+                                msg += "Your search found " + places.getTotal() + " results.\n";
+                                msg += "Yelp returned " + places.getBusinesses().size() + " businesses in this request.\n\n";
+
+                                Random rand = new Random();
+                                int randomNumber = rand.nextInt(places.getBusinesses().size());
+                                Business business = places.getBusinesses().get(randomNumber);
+                                name = business.getName();
+                                address = business.getLocation().getAddress().toString().substring(1, business.getLocation().getAddress().toString().length() - 1);
+                                city = business.getLocation().getCity();
+                                state = business.getLocation().getState_code();
+                                zip = business.getLocation().getPostal_code();
+                                phone = business.getDisplay_phone();
+                                rating = "Rating: " + business.getRating();
+                                url = business.getImage_url().substring(0, business.getImage_url().length() - 6) + "o.jpg";
+                                mobileUrl = business.getMobile_url();
+                                ratingImg = business.getRating_img_url_large();
+                                snippet = business.getSnippet_text();
+                                snippetImg = business.getSnippet_image_url();
+
+                                /*for(Business biz : places.getBusinesses()) {
+                                    msg+= biz.getName() + "\n";
+                                    for(String address : biz.getLocation().getAddress()) {
+                                        msg += "  " + address + "\n";
+                                    }
+                                    msg += " " + biz.getLocation().getCity() + "\n";
+                                    msg += "Rating :" + biz.getRating() + "\n";
+                                    msg += " " + biz.getImage_url() + "\n\n";
+                                }*/
+
+                            } catch (Exception e) {
+                                System.out.println("Error, could not parse returned data!");
+                                System.out.println(rawData);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }.start();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         Intent intent = new Intent(Foodlette.this, result.class);
+                        intent.putExtra("name", name);
+                        intent.putExtra("address", address);
+                        intent.putExtra("city", city);
+                        intent.putExtra("state", state);
+                        intent.putExtra("zip", zip);
+                        intent.putExtra("phone", phone);
+                        intent.putExtra("rating", rating);
+                        intent.putExtra("url", url);
+                        intent.putExtra("mobileUrl", mobileUrl);
+                        intent.putExtra("ratingImg", ratingImg);
+                        intent.putExtra("snippet", snippet);
                         startActivity(intent);
                     }
-                }, 2100);
+                }, 1001);
             }
         });
 
-        SeekBar distanceSeekBar = (SeekBar)findViewById(R.id.distance);
+        distanceSeekBar = (SeekBar)findViewById(R.id.distance);
         distanceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             TextView textView = (TextView) findViewById(R.id.distanceCovered);
-            int progress = 0;
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
-                progress = progressValue;
 
+                textView.setText("Distance within: " + progressValue + " miles");
+                distance = progressValue / (0.00062137);
             }
 
             @Override
@@ -73,48 +170,44 @@ public class Foodlette extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                textView.setText("Distance: " + progress + " miles" );
-
-            }
-
-
-        });
-
-        SeekBar priceSeekBar = (SeekBar)findViewById(R.id.price);
-        priceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
-            TextView textView = (TextView) findViewById(R.id.priceCovered);
-            int progress = 0;
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
-                progress = progressValue;
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                textView.setText("Price: $" + progress );
 
             }
         });
+
 
         Switch mySwitch = (Switch)findViewById(R.id.roullete);
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    Toast.makeText(getApplicationContext(), R.string.roulleteOn,Toast.LENGTH_SHORT).show();
-                }
-                else Toast.makeText(getApplicationContext(), R.string.roulleteOff,Toast.LENGTH_SHORT).show();
+                if (isChecked) {
+                    Toast.makeText(getApplicationContext(), R.string.rouletteOn, Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(getApplicationContext(), R.string.rouletteOff, Toast.LENGTH_SHORT).show();
             }
 
-    });
+        });
+
+        // Retrieve selected category
+        Spinner mySpinner = (Spinner)findViewById(R.id.category);
+        String[] items = new String[]{"bagels","bakeries","beer_and_wine","beverage_stores","breweries",
+                                      "bubbletea","churros","cideries", "coffee","cupcakes",
+                                      "desserts","restaurants"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        mySpinner.setAdapter(adapter);
+
+        mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                category = parent.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

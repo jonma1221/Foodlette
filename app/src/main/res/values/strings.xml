@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CS499Foodlette</string>
     <string name="action_settings">Settings</string>
-    <string name="roulleteOn">Roullete Mode ON</string>
-    <string name="roulleteOff">Roullete Mode OFF</string>
+    <string name="rouletteOn">Roulette Mode ON</string>
+    <string name="rouletteOff">Roulette Mode OFF</string>
     <string name="title_activity_result">result</string>
 </resources>
