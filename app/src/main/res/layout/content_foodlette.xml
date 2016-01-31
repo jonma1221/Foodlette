@@ -57,7 +57,7 @@
 
             <TextView
                 android:id="@+id/distanceCovered"
-                android:text="Distance within: "
+                android:text="Distance within: 0 miles"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

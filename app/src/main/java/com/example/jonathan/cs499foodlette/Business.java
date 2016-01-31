@@ -1,8 +1,9 @@
 package com.example.jonathan.cs499foodlette;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Business {
+public class Business implements Serializable{
 	private String id;
 	private String name;
 	private String image_url;

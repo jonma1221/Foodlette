@@ -1,6 +1,8 @@
 package com.example.jonathan.cs499foodlette;
 
-public class Coordinate {
+import java.io.Serializable;
+
+public class Coordinate implements Serializable{
 	private double latitude;
 	private double longitude;
 	public double getLatitude() {

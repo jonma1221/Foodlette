@@ -34,7 +34,7 @@ import org.scribe.oauth.OAuthService;
 import java.util.Random;
 
 public class Foodlette extends AppCompatActivity {
-
+    public  final static String SER_KEY ="com.example.jonathan.cs499foodlette.ser";
     final String CONSUMER_KEY = "XxsQ0t52VIaAtbW9y6o8TA";
     final String CONSUMER_SECRET = "88THviX8OapVOhAF01OLxnqNV_c";
     final String TOKEN = "gCPhJx8GzdO88RsHkbvv5eWozqLASiMB";
@@ -44,12 +44,13 @@ public class Foodlette extends AppCompatActivity {
     EditText editLocation;
     SeekBar distanceSeekBar;
 
+    Business business,savedBusiness;
     String location;
     String category;
     String msg = "";
     String id,name,address,city,state,zip,phone,rating,url,mobileUrl,ratingImg,snippet,snippetImg,menu;
-    double distance;
-    boolean toggle = false;
+    double distance = 0;
+    boolean loaded = false, toggle = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,7 @@ public class Foodlette extends AppCompatActivity {
 
         editLocation = (EditText) findViewById(R.id.location);
 
+
         final Animation rotateAnim = AnimationUtils.loadAnimation(this,R.anim.rotate);
 
         searchButton = (ImageButton)findViewById(R.id.search);
@@ -67,6 +69,8 @@ public class Foodlette extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 v.startAnimation(rotateAnim);
+                loaded = getIntent().getBooleanExtra("loaded",false);
+
                 toggle = true ? false : true;
                 location = editLocation.getText().toString();
                 Log.i("info",location);
@@ -79,7 +83,9 @@ public class Foodlette extends AppCompatActivity {
                             OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/search");
                             request.addQuerystringParameter("location", location);
                             request.addQuerystringParameter("category_filter", category);
-                            request.addQuerystringParameter("radius_filter", "" + distance);
+                            if(distance !=0 ){
+                                request.addQuerystringParameter("radius_filter", "" + distance);
+                            }
                             request.addQuerystringParameter("sort", "1");
                             if (toggle) {
                                 request.addQuerystringParameter("offset", "20");
@@ -89,15 +95,20 @@ public class Foodlette extends AppCompatActivity {
                             service.signRequest(accessToken, request);
                             Response response = request.send();
                             String rawData = response.getBody();
-                            Log.i("info", rawData);
                             try {
                                 YelpSearchResult places = new Gson().fromJson(rawData, YelpSearchResult.class);
-                                msg += "Your search found " + places.getTotal() + " results.\n";
-                                msg += "Yelp returned " + places.getBusinesses().size() + " businesses in this request.\n\n";
-
+                                if(loaded){
+                                    Log.i("info", "Loaded is true");
+                                    Business biz = (Business)getIntent().getSerializableExtra("biz");
+                                    Log.i("info",biz.getName());
+                                    places.getBusinesses().add(biz);
+                                }
+                                else Log.i("info", "Loaded is false");
+                                Log.i("info", "Your search found " + places.getTotal() + " results.\n");
+                                Log.i("info","Yelp returned " + places.getBusinesses().size() + " businesses in this request.\n");
                                 Random rand = new Random();
                                 int randomNumber = rand.nextInt(places.getBusinesses().size());
-                                Business business = places.getBusinesses().get(randomNumber);
+                                business = places.getBusinesses().get(randomNumber);
                                 id = business.getId();
                                 name = business.getName();
                                 address = business.getLocation().getAddress().toString().substring(1, business.getLocation().getAddress().toString().length() - 1);
@@ -111,16 +122,7 @@ public class Foodlette extends AppCompatActivity {
                                 ratingImg = business.getRating_img_url_large();
                                 snippet = business.getSnippet_text();
                                 snippetImg = business.getSnippet_image_url();
-                                Log.i("info",id);
-                                /*for(Business biz : places.getBusinesses()) {
-                                    msg+= biz.getName() + "\n";
-                                    for(String address : biz.getLocation().getAddress()) {
-                                        msg += "  " + address + "\n";
-                                    }
-                                    msg += " " + biz.getLocation().getCity() + "\n";
-                                    msg += "Rating :" + biz.getRating() + "\n";
-                                    msg += " " + biz.getImage_url() + "\n\n";
-                                }*/
+                                Log.i("info", id);
 
                             } catch (Exception e) {
                                 System.out.println("Error, could not parse returned data!");
@@ -131,12 +133,14 @@ public class Foodlette extends AppCompatActivity {
                         }
                     }
                 }.start();
+
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         Intent intent = new Intent(Foodlette.this, result.class);
-                        intent.putExtra("name", name);
+                        intent.putExtra("biz",business);
+                        /*intent.putExtra("name", name);
                         intent.putExtra("address", address);
                         intent.putExtra("city", city);
                         intent.putExtra("state", state);
@@ -146,7 +150,7 @@ public class Foodlette extends AppCompatActivity {
                         intent.putExtra("url", url);
                         intent.putExtra("mobileUrl", mobileUrl);
                         intent.putExtra("ratingImg", ratingImg);
-                        intent.putExtra("snippet", snippet);
+                        intent.putExtra("snippet", snippet);*/
                         startActivity(intent);
                     }
                 }, 1001);
@@ -195,10 +199,10 @@ public class Foodlette extends AppCompatActivity {
         // Retrieve selected category
         Spinner mySpinner = (Spinner)findViewById(R.id.category);
         String[] items = new String[]{"bagels","bakeries","beer_and_wine","breweries",
-                                      "bubbletea","churros","coffee","cupcakes",
+                                      "bubbletea","burgers","bbq","buffets","churros","coffee","cupcakes",
                                       "delicatessen","desserts","foodtrucks",
                                       "pizza","pretzels", "ramen","streetvendors",
-                                      "restaurants"};
+                                      "tea","restaurants"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
         mySpinner.setAdapter(adapter);
         mySpinner.setSelection(adapter.getPosition("restaurants"));

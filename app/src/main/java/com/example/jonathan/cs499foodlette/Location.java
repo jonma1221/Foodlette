@@ -1,8 +1,9 @@
 package com.example.jonathan.cs499foodlette;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Location {
+public class Location implements Serializable{
 	private Coordinate coordinate;
 	private List<String> address;
 	private List<String> displayAddress;
