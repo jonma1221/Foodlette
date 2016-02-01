@@ -22,6 +22,8 @@ public class result extends AppCompatActivity {
     TextView nameBiz;
     TextView snippetView;
     ImageView view;
+    ImageButton load;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +32,7 @@ public class result extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final Business business = (Business)getIntent().getSerializableExtra("biz");
+        boolean rouletteMode = getIntent().getBooleanExtra("rouletteMode", false);
         String name = business.getName();
         String address = business.getLocation().getAddress().toString().substring(1, business.getLocation().getAddress().toString().length() - 1);
         String city = business.getLocation().getCity();
@@ -41,34 +44,29 @@ public class result extends AppCompatActivity {
         String mobileUrl = business.getMobile_url();
         String ratingUrl = business.getRating_img_url_large();
         String snippet = business.getSnippet_text();
-        //String name = getIntent().getStringExtra("name");
-
-        /*String address = getIntent().getStringExtra("address");
-        String city = getIntent().getStringExtra("city");
-        String state = getIntent().getStringExtra("state");
-        String zip = getIntent().getStringExtra("zip");
-        String phone = getIntent().getStringExtra("phone");
-        String rating = getIntent().getStringExtra("rating");
-        String url = getIntent().getStringExtra("url");
-        String mobileUrl = getIntent().getStringExtra("mobileUrl");
-        String ratingUrl = getIntent().getStringExtra("ratingImg");
-        String snippet = getIntent().getStringExtra("snippet");*/
 
         if(phone == null) phone = "No number";
         String locationInfo =  address + "\n" + city + "\n" + state + ", " + zip + "\n" + phone + "\n";
 
         nameBiz = (TextView) findViewById(R.id.name);
-        nameBiz.setText(name);
+        if(name != null){
+            nameBiz.setText(name);
+        }
 
         infoView = (TextView) findViewById(R.id.info);
         infoView.setText(locationInfo);
 
+        if(snippet == null) snippet= "No review available";
         snippetView = (TextView) findViewById(R.id.snippet);
         snippetView.setText(Html.fromHtml("\"" + snippet + "\"" +
                 "<a href=mobileUrl> \n more info...</a>"));
 
 
-        ImageButton load = (ImageButton)findViewById(R.id.load);
+        load = (ImageButton)findViewById(R.id.load);
+        if(rouletteMode)
+            load.setVisibility(View.VISIBLE);
+        else load.setVisibility(View.GONE);
+
         load.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,14 +74,19 @@ public class result extends AppCompatActivity {
                 intent.putExtra("loaded",true);
                 intent.putExtra("biz",business);
                 Toast.makeText(getApplicationContext(), R.string.loaded, Toast.LENGTH_SHORT).show();
-                startActivity(intent);
+                setResult(RESULT_OK,intent);
+                finish();
             }
         });
 
         new DownloadImageTask((ImageView)findViewById(R.id.ratingImg))
                 .execute(ratingUrl);
-        new DownloadImageTask((ImageView)findViewById(R.id.image))
-                .execute(url);
+
+        if(url != null){
+            new DownloadImageTask((ImageView)findViewById(R.id.image))
+                    .execute(url);
+        }
+
     }
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;

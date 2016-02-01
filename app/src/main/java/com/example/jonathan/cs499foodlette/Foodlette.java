@@ -34,7 +34,6 @@ import org.scribe.oauth.OAuthService;
 import java.util.Random;
 
 public class Foodlette extends AppCompatActivity {
-    public  final static String SER_KEY ="com.example.jonathan.cs499foodlette.ser";
     final String CONSUMER_KEY = "XxsQ0t52VIaAtbW9y6o8TA";
     final String CONSUMER_SECRET = "88THviX8OapVOhAF01OLxnqNV_c";
     final String TOKEN = "gCPhJx8GzdO88RsHkbvv5eWozqLASiMB";
@@ -44,13 +43,15 @@ public class Foodlette extends AppCompatActivity {
     EditText editLocation;
     SeekBar distanceSeekBar;
 
-    Business business,savedBusiness;
+    Business business, loadedbusiness;
+
+    //filters
     String location;
     String category;
-    String msg = "";
-    String id,name,address,city,state,zip,phone,rating,url,mobileUrl,ratingImg,snippet,snippetImg,menu;
     double distance = 0;
-    boolean loaded = false, toggle = false;
+
+    // Food rushian roulette
+    boolean loaded = false, rouletteMode, toggle = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,29 +62,38 @@ public class Foodlette extends AppCompatActivity {
 
         editLocation = (EditText) findViewById(R.id.location);
 
-
         final Animation rotateAnim = AnimationUtils.loadAnimation(this,R.anim.rotate);
 
         searchButton = (ImageButton)findViewById(R.id.search);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(editLocation.getText().length() != 0){
+                    location = editLocation.getText().toString();
+                    Log.i("info","Initial location: " + location);
+                }
+                else{
+                    Log.i("info","Empty");
+                    Toast.makeText(getApplicationContext(), R.string.verifyLocation, Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 v.startAnimation(rotateAnim);
-                loaded = getIntent().getBooleanExtra("loaded",false);
-
                 toggle = true ? false : true;
-                location = editLocation.getText().toString();
-                Log.i("info",location);
+
                 new Thread() {
                     @Override
                     public void run() {
                         try {
-                            OAuthService service = new ServiceBuilder().provider(YelpV2API.class).apiKey(CONSUMER_KEY).apiSecret(CONSUMER_SECRET).build();
+                            OAuthService service = new ServiceBuilder().provider(YelpV2API.class).
+                                    apiKey(CONSUMER_KEY).apiSecret(CONSUMER_SECRET).build();
                             Token accessToken = new Token(TOKEN, TOKEN_SECRET);
-                            OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/search");
+                            OAuthRequest request = new OAuthRequest(Verb.GET,
+                                                                "http://api.yelp.com/v2/search");
+
+
                             request.addQuerystringParameter("location", location);
                             request.addQuerystringParameter("category_filter", category);
-                            if(distance !=0 ){
+                            if (distance != 0) {
                                 request.addQuerystringParameter("radius_filter", "" + distance);
                             }
                             request.addQuerystringParameter("sort", "1");
@@ -97,32 +107,16 @@ public class Foodlette extends AppCompatActivity {
                             String rawData = response.getBody();
                             try {
                                 YelpSearchResult places = new Gson().fromJson(rawData, YelpSearchResult.class);
-                                if(loaded){
+                                if (loaded) {
                                     Log.i("info", "Loaded is true");
-                                    Business biz = (Business)getIntent().getSerializableExtra("biz");
-                                    Log.i("info",biz.getName());
-                                    places.getBusinesses().add(biz);
-                                }
-                                else Log.i("info", "Loaded is false");
+                                    Log.i("info", loadedbusiness.getName());
+                                    places.getBusinesses().add(loadedbusiness);
+                                } else Log.i("info", "Loaded is false");
                                 Log.i("info", "Your search found " + places.getTotal() + " results.\n");
-                                Log.i("info","Yelp returned " + places.getBusinesses().size() + " businesses in this request.\n");
+                                Log.i("info", "Yelp returned " + places.getBusinesses().size() + " businesses in this request.\n");
                                 Random rand = new Random();
                                 int randomNumber = rand.nextInt(places.getBusinesses().size());
                                 business = places.getBusinesses().get(randomNumber);
-                                id = business.getId();
-                                name = business.getName();
-                                address = business.getLocation().getAddress().toString().substring(1, business.getLocation().getAddress().toString().length() - 1);
-                                city = business.getLocation().getCity();
-                                state = business.getLocation().getState_code();
-                                zip = business.getLocation().getPostal_code();
-                                phone = business.getDisplay_phone();
-                                rating = "Rating: " + business.getRating();
-                                url = business.getImage_url().substring(0, business.getImage_url().length() - 6) + "o.jpg";
-                                mobileUrl = business.getMobile_url();
-                                ratingImg = business.getRating_img_url_large();
-                                snippet = business.getSnippet_text();
-                                snippetImg = business.getSnippet_image_url();
-                                Log.i("info", id);
 
                             } catch (Exception e) {
                                 System.out.println("Error, could not parse returned data!");
@@ -139,24 +133,15 @@ public class Foodlette extends AppCompatActivity {
                     @Override
                     public void run() {
                         Intent intent = new Intent(Foodlette.this, result.class);
-                        intent.putExtra("biz",business);
-                        /*intent.putExtra("name", name);
-                        intent.putExtra("address", address);
-                        intent.putExtra("city", city);
-                        intent.putExtra("state", state);
-                        intent.putExtra("zip", zip);
-                        intent.putExtra("phone", phone);
-                        intent.putExtra("rating", rating);
-                        intent.putExtra("url", url);
-                        intent.putExtra("mobileUrl", mobileUrl);
-                        intent.putExtra("ratingImg", ratingImg);
-                        intent.putExtra("snippet", snippet);*/
-                        startActivity(intent);
+                        intent.putExtra("biz", business);
+                        intent.putExtra("rouletteMode", rouletteMode);
+                        startActivityForResult(intent, 1);
                     }
                 }, 1001);
             }
         });
 
+        // Filter for radius
         distanceSeekBar = (SeekBar)findViewById(R.id.distance);
         distanceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             TextView textView = (TextView) findViewById(R.id.distanceCovered);
@@ -179,7 +164,7 @@ public class Foodlette extends AppCompatActivity {
             }
         });
 
-
+        // Food Rushian Roulette mode
         Switch mySwitch = (Switch)findViewById(R.id.roullete);
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -187,22 +172,24 @@ public class Foodlette extends AppCompatActivity {
                 if (isChecked) {
                     Toast.makeText(getApplicationContext(), R.string.rouletteOn, Toast.LENGTH_SHORT).show();
                     searchButton.setBackgroundResource(R.drawable.rr);
+                    rouletteMode = true;
                 } else{
                     Toast.makeText(getApplicationContext(), R.string.rouletteOff, Toast.LENGTH_SHORT).show();
                     searchButton.setBackgroundResource(R.drawable.roullete);
+                    rouletteMode = false;
+                    loaded = false;
                 }
-
             }
-
         });
 
-        // Retrieve selected category
+        // Filter for food category
         Spinner mySpinner = (Spinner)findViewById(R.id.category);
-        String[] items = new String[]{"bagels","bakeries","beer_and_wine","breweries",
-                                      "bubbletea","burgers","bbq","buffets","churros","coffee","cupcakes",
-                                      "delicatessen","desserts","foodtrucks",
-                                      "pizza","pretzels", "ramen","streetvendors",
-                                      "tea","restaurants"};
+        String[] items = new String[]{"bagels","bakeries","beer_and_wine",
+                                      "bubbletea","burgers","bbq","buffets","cheesesteaks","churros",
+                                      "coffee","cupcakes","delicatessen","desserts","donuts",
+                                      "hotdog","hotpot","icecream","pizza","pretzels","ramen",
+                                      "restaurants","salad","sandwiches","seafood","soup","steak",
+                                      "sushi","tea"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
         mySpinner.setAdapter(adapter);
         mySpinner.setSelection(adapter.getPosition("restaurants"));
@@ -218,7 +205,16 @@ public class Foodlette extends AppCompatActivity {
             }
         });
     }
-
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK){
+                loaded = data.getBooleanExtra("loaded", false);
+                loadedbusiness  = (Business) data.getSerializableExtra("biz");
+                Log.i("info:","Loaded");
+            }
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
