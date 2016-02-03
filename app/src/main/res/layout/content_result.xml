@@ -1,23 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/gray"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/food_bunny"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.jonathan.cs499foodlette.result"
+    tools:context=".result"
     tools:showIn="@layout/activity_result">
 
-
     <LinearLayout
+        android:padding="5dp"
+        android:background="@drawable/bg_card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="300dp">
+
+            <ImageView
+                android:id="@+id/ratingImg"
+                android:layout_weight="0.05"
+                android:scaleType="fitEnd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:scaleType="centerCrop"
+                android:layout_weight="1"
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+        </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -26,11 +48,12 @@
             <TextView
                 android:layout_weight="5"
                 android:id="@+id/name"
-                android:textSize="30dp"
+                android:textSize="20dp"
                 android:textStyle="bold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:padding="5dp" />
+
             <ImageButton
                 android:id="@+id/load"
                 android:background="@drawable/load"
@@ -44,7 +67,7 @@
             android:layout_weight=".1"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
             <TextView
                 android:layout_weight="1"
                 android:id="@+id/info"
@@ -53,27 +76,32 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"/>
             <TextView
-                android:background="@drawable/border"
+                android:linksClickable="true"
+                android:autoLink="web"
                 android:textStyle="italic"
-                android:layout_weight="1"
+                android:layout_weight="0.70"
                 android:id="@+id/snippet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/ratingImg"
-            android:layout_weight="0.05"
-            android:scaleType="fitEnd"
+        <LinearLayout
+            android:paddingTop="30dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical">
 
-        <ImageView
-            android:scaleType="centerCrop"
-            android:layout_weight="1"
-            android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="0dp" />
+            <fragment
+                android:id="@+id/mapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="30dp"
+                class="com.google.android.gms.maps.SupportMapFragment" />
+
+        </LinearLayout>
 
     </LinearLayout>
-</RelativeLayout>
+
+
+</ScrollView>

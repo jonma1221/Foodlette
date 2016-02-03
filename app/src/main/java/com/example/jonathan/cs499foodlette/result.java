@@ -15,14 +15,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.io.InputStream;
+
+import YelpParseClasses.Business;
 
 public class result extends AppCompatActivity {
     TextView infoView;
     TextView nameBiz;
     TextView snippetView;
-    ImageView view;
+    TextView reviewCount;
     ImageButton load;
+
+    //Google Map
+    private GoogleMap googleMap;
+    private Business business;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +43,8 @@ public class result extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final Business business = (Business)getIntent().getSerializableExtra("biz");
+
+        business = (Business) getIntent().getSerializableExtra("biz");
         boolean rouletteMode = getIntent().getBooleanExtra("rouletteMode", false);
         String name = business.getName();
         String address = business.getLocation().getAddress().toString().substring(1, business.getLocation().getAddress().toString().length() - 1);
@@ -45,8 +58,8 @@ public class result extends AppCompatActivity {
         String ratingUrl = business.getRating_img_url_large();
         String snippet = business.getSnippet_text();
 
-        if(phone == null) phone = "No number";
-        String locationInfo =  address + "\n" + city + "\n" + state + ", " + zip + "\n" + phone + "\n";
+        if (phone == null) phone = "No number";
+        String locationInfo = address + "\n" + city + "\n" + state + ", " + zip + "\n" + phone + "\n";
 
         nameBiz = (TextView) findViewById(R.id.name);
         if(name != null){
@@ -61,7 +74,6 @@ public class result extends AppCompatActivity {
         snippetView.setText(Html.fromHtml("\"" + snippet + "\"" +
                 "<a href=mobileUrl> \n more info...</a>"));
 
-
         load = (ImageButton)findViewById(R.id.load);
         if(rouletteMode)
             load.setVisibility(View.VISIBLE);
@@ -70,7 +82,7 @@ public class result extends AppCompatActivity {
         load.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(result.this,Foodlette.class);
+                Intent intent = new Intent(result.this, Foodlette.class);
                 intent.putExtra("loaded",true);
                 intent.putExtra("biz",business);
                 Toast.makeText(getApplicationContext(), R.string.loaded, Toast.LENGTH_SHORT).show();
@@ -87,7 +99,27 @@ public class result extends AppCompatActivity {
                     .execute(url);
         }
 
+        initializeMap();
+
     }
+
+    private void initializeMap() {
+
+        if (googleMap == null) {
+            googleMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment)).getMap();
+
+            double lat = business.getLocation().getCoordinate().getLatitude();
+            double lng = business.getLocation().getCoordinate().getLongitude();
+            LatLng latlng = new LatLng(lat, lng);
+
+            if (googleMap != null) {
+                googleMap.addMarker(new MarkerOptions().position(latlng).title("Marker"));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 15));
+            }
+        }
+
+    }
+
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
@@ -107,7 +139,6 @@ public class result extends AppCompatActivity {
             }
             return mIcon11;
         }
-
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
         }

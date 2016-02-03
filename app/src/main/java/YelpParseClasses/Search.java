@@ -1,8 +1,8 @@
-package com.example.jonathan.cs499foodlette;
+package YelpParseClasses;
 
 import java.util.List;
 
-public class YelpSearchResult {
+public class Search {
 	private Region region;
 	private int total;
 	private List<Business> businesses;

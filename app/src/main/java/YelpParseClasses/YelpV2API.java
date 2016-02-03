@@ -1,4 +1,4 @@
-package com.example.jonathan.cs499foodlette;
+package YelpParseClasses;
 import org.scribe.builder.api.DefaultApi10a;
 import org.scribe.model.Token;
 

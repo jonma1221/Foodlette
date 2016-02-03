@@ -33,6 +33,10 @@ import org.scribe.oauth.OAuthService;
 
 import java.util.Random;
 
+import YelpParseClasses.Business;
+import YelpParseClasses.Search;
+import YelpParseClasses.YelpV2API;
+
 public class Foodlette extends AppCompatActivity {
     final String CONSUMER_KEY = "XxsQ0t52VIaAtbW9y6o8TA";
     final String CONSUMER_SECRET = "88THviX8OapVOhAF01OLxnqNV_c";
@@ -106,7 +110,7 @@ public class Foodlette extends AppCompatActivity {
                             Response response = request.send();
                             String rawData = response.getBody();
                             try {
-                                YelpSearchResult places = new Gson().fromJson(rawData, YelpSearchResult.class);
+                                Search places = new Gson().fromJson(rawData, Search.class);
                                 if (loaded) {
                                     Log.i("info", "Loaded is true");
                                     Log.i("info", loadedbusiness.getName());
@@ -171,7 +175,7 @@ public class Foodlette extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     Toast.makeText(getApplicationContext(), R.string.rouletteOn, Toast.LENGTH_SHORT).show();
-                    searchButton.setBackgroundResource(R.drawable.rr);
+                    searchButton.setBackgroundResource(R.drawable.rr_empty);
                     rouletteMode = true;
                 } else{
                     Toast.makeText(getApplicationContext(), R.string.rouletteOff, Toast.LENGTH_SHORT).show();
@@ -185,7 +189,7 @@ public class Foodlette extends AppCompatActivity {
         // Filter for food category
         Spinner mySpinner = (Spinner)findViewById(R.id.category);
         String[] items = new String[]{"bagels","bakeries","beer_and_wine",
-                                      "bubbletea","burgers","bbq","buffets","cheesesteaks","churros",
+                "bubbletea", "burgers", "bbq", "buffets", "cheesesteaks",
                                       "coffee","cupcakes","delicatessen","desserts","donuts",
                                       "hotdog","hotpot","icecream","pizza","pretzels","ramen",
                                       "restaurants","salad","sandwiches","seafood","soup","steak",
@@ -204,6 +208,7 @@ public class Foodlette extends AppCompatActivity {
 
             }
         });
+
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -211,6 +216,7 @@ public class Foodlette extends AppCompatActivity {
             if(resultCode == RESULT_OK){
                 loaded = data.getBooleanExtra("loaded", false);
                 loadedbusiness  = (Business) data.getSerializableExtra("biz");
+                searchButton.setBackgroundResource(R.drawable.rr);
                 Log.i("info:","Loaded");
             }
         }

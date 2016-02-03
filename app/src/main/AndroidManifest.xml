@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.jonathan.cs499foodlette">
+
+    <uses-sdk
+        android:minSdkVersion="9"
+        android:targetSdkVersion="23" />
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!--
+    THE FOLLOWING TWO PERMISSIONS ARE NOT REQUIRED TO USE
+    GOOGLE MAPS ANDROID API V2, BUT ARE RECOMMENDED
+    -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,16 +33,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".result"
             android:label="@string/title_activity_result"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
-            <intent-filter>
-                <action android:name="com.example.jonathan.cs499foodlette.result" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
+        <!-- GOOGLE MAPS META DATA -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyBVB9-vpXD5f773YWWoEOJmuz7Ho_ENJm0" />
+
+        <intent-filter>
+            <action android:name="com.example.jonathan.cs499foodlette.result" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+
+
     </application>
 
 </manifest>

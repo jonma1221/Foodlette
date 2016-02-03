@@ -1,4 +1,4 @@
-package com.example.jonathan.cs499foodlette;
+package YelpParseClasses;
 
 import java.io.Serializable;
 
