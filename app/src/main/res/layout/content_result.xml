@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@color/gray"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -15,93 +15,178 @@
     tools:showIn="@layout/activity_result">
 
     <LinearLayout
+        android:id="@+id/rootView"
         android:padding="5dp"
         android:background="@drawable/bg_card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:orientation="vertical"
+        <TabHost
             android:layout_width="match_parent"
-            android:layout_height="300dp">
+            android:layout_height="wrap_content"
+            android:id="@+id/tabHost">
 
-            <ImageView
-                android:id="@+id/ratingImg"
-                android:layout_weight="0.05"
-                android:scaleType="fitEnd"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <ImageView
-                android:scaleType="centerCrop"
-                android:layout_weight="1"
-                android:id="@+id/image"
-                android:layout_width="match_parent"
-                android:layout_height="0dp" />
-        </LinearLayout>
+                <TabWidget
+                    android:id="@android:id/tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"></TabWidget>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_weight="5"
-                android:id="@+id/name"
-                android:textSize="20dp"
-                android:textStyle="bold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:padding="5dp" />
+                <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent">
 
-            <ImageButton
-                android:id="@+id/load"
-                android:background="@drawable/load"
-                android:layout_weight=".5"
-                android:layout_width="0dp"
-                android:layout_height="30dp" />
-        </LinearLayout>
+                    <!--Rating and Food image-->
+                    <LinearLayout
+                        android:id="@+id/foodInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
 
 
-        <LinearLayout
-            android:layout_weight=".1"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <TextView
-                android:layout_weight="1"
-                android:id="@+id/info"
-                android:textStyle="bold"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"/>
-            <TextView
-                android:linksClickable="true"
-                android:autoLink="web"
-                android:textStyle="italic"
-                android:layout_weight="0.70"
-                android:id="@+id/snippet"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+                                <ImageView
+                                    android:scaleType="centerCrop"
+                                    android:id="@+id/image"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="250dp" />
 
-        <LinearLayout
-            android:paddingTop="30dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg_card"
-            android:orientation="vertical">
+                                <ImageView
+                                    android:id="@+id/ratingImg"
+                                    android:scaleType="fitStart"
+                                    android:layout_below="@+id/image"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="20dp" />
 
-            <fragment
-                android:id="@+id/mapFragment"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginTop="30dp"
-                class="com.google.android.gms.maps.SupportMapFragment" />
+                                <TextView
+                                    android:textColor="@color/black"
+                                    android:id="@+id/name"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_below="@+id/ratingImg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
 
-        </LinearLayout>
+                                <ScrollView
+                                    android:layout_marginTop="5dp"
+                                    android:layout_below="@+id/name"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:fillViewport="false">
+                                    <!--Location info and snippet-->
+                                    <LinearLayout
+                                        android:orientation="horizontal"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content" >
+
+                                        <TextView
+                                            android:layout_weight="1"
+                                            android:id="@+id/info"
+                                            android:textStyle="bold"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:paddingRight="5dp" />
+
+                                        <TextView
+                                            android:textStyle="italic"
+                                            android:layout_weight="1"
+                                            android:id="@+id/snippet"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+                                </ScrollView>
+
+                                <!--Favorite Button-->
+                                <android.support.design.widget.FloatingActionButton
+                                    android:id="@+id/favorite"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_alignBottom="@+id/image"
+                                    android:layout_marginBottom="-20dp"
+                                    android:layout_marginRight="5dp"
+                                    android:layout_gravity="bottom|end"
+                                    android:tint="@color/white"
+                                    app:fabSize="mini"
+                                    android:src="@drawable/ic_favorite_black_24dp"
+                                    app:elevation="6dp"
+                                    app:pressedTranslationZ="12dp" />
+
+                                <!--Load Button-->
+                                <android.support.design.widget.FloatingActionButton
+                                    android:id="@+id/load"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_marginRight="5dp"
+                                    android:layout_toLeftOf="@+id/favorite"
+                                    android:layout_alignBottom="@+id/image"
+                                    android:layout_marginBottom="-20dp"
+                                    android:layout_gravity="bottom|end"
+                                    android:tint="@color/white"
+                                    app:fabSize="mini"
+                                    android:src="@drawable/load_bullet"
+                                    app:elevation="6dp"
+                                    app:pressedTranslationZ="12dp" />
+                            </RelativeLayout>
+                    </LinearLayout>
+
+                    <!-- WEB INFO -->
+                    <LinearLayout
+                        android:id="@+id/webInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <WebView
+                            android:id="@+id/webview"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+
+                        </WebView>
+
+                    </LinearLayout>
+
+
+                    <!-- MAP INFO -->
+                    <LinearLayout
+                        android:id="@+id/mapInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_card" >
+
+                            <TextView
+                                android:id="@+id/mapFragmentInfo"
+                                android:textStyle="bold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <fragment
+                                class="com.google.android.gms.maps.SupportMapFragment"
+                                android:id="@+id/mapFragment"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                </FrameLayout>
+            </LinearLayout>
+        </TabHost>
 
     </LinearLayout>
-
-
-</ScrollView>
+</LinearLayout>

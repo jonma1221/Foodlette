@@ -11,6 +11,7 @@ public class Business implements Serializable{
 	private String mobile_url;
 	private String phone;
 	private String display_phone;
+	private List<String> display_address;
 	private int review_count;
 	private List<List<String>> categories;
 	private double distance;
@@ -68,9 +69,11 @@ public class Business implements Serializable{
 	public String getDisplay_phone() {
 		return display_phone;
 	}
-	public void setDisplay_phonee(String displayPhone) {
+	public void setDisplay_phone(String displayPhone) {
 		this.display_phone = displayPhone;
 	}
+	public void setDisplay_address(List<String> display_address){this.display_address = display_address;}
+	public List<String> getDisplay_address(){return display_address;}
 	public int getReview_count() {
 		return review_count;
 	}

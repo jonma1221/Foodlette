@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">Foodlette</string>
     <string name="action_settings">Settings</string>
+    <string name="action_forward">Forward</string>
+    <string name="action_back">Back</string>
     <string name="verifyLocation">You must enter a location</string>
     <string name="rouletteOn">Roulette Mode ON</string>
     <string name="rouletteOff">Roulette Mode OFF</string>
-    <string name ="loaded">Restaurant loaded</string>
+    <string name="loaded">Restaurant loaded</string>
     <string name="title_activity_result">Why don\'t you try...</string>
+    <string name="title_activity_scratch_work">scratchWork</string>
+
 </resources>
