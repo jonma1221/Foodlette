@@ -10,4 +10,10 @@
     <string name="title_activity_result">Why don\'t you try...</string>
     <string name="title_activity_scratch_work">scratchWork</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+
 </resources>

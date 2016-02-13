@@ -1,13 +1,18 @@
 package com.example.jonathan.cs499foodlette;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -17,6 +22,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -36,6 +42,8 @@ import org.scribe.oauth.OAuthService;
 import java.util.ArrayList;
 import java.util.Random;
 
+import Fragments.FragmentOne;
+import Fragments.FragmentTwo;
 import YelpParseClasses.Business;
 import YelpParseClasses.Search;
 import YelpParseClasses.YelpV2API;
@@ -80,6 +88,20 @@ public class Foodlette extends AppCompatActivity {
     private ArrayList<Business> favoriteList = new ArrayList<Business>();
     private BusinessAdapter mAdapter;
 
+    // Navigation drawer
+    /*private ListView navView;
+    ArrayAdapter<String> listAdapter;
+    String fragmentArray[] = {"FRAGMENT 1", "FRAGMENT 2"};
+    private DrawerLayout drawerLayout;*/
+
+    // Navigation drawer part 2
+    private DrawerLayout mDrawerLayout;
+    private ListView drawerList;
+    private ListView drawerListR;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private LinearLayout leftDrawer;
+    private String[] drawerItems = {"FRAGMENT 1", "FRAGMENT 2"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,7 +119,50 @@ public class Foodlette extends AppCompatActivity {
 
         favorites();
 
+        //TESTING NAVIGATION DRAWER
+        startNavigationDrawer();
+
+
+
+
+
+
+
+
     }
+
+    private void startNavigationDrawer() {
+        //NAVIGATION DRAWER
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        /*mDrawerList = (ListView) findViewById(R.id.leftNav);
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, drawerItems));*/
+
+        //findViewById(R.id.distance).setOnTouchListener(seekBarTouchListener);
+
+    }
+
+    private View.OnTouchListener seekBarTouchListener = new ListView.OnTouchListener() {
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            int action = event.getAction();
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    //Disallow Drawer to intercept touch events.
+                    v.getParent().requestDisallowInterceptTouchEvent(true);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    //Allow Drawer to intercept touch events.
+                    v.getParent().requestDisallowInterceptTouchEvent(false);
+                    break;
+            }
+
+            // Handle seekbar touch events.
+            v.onTouchEvent(event);
+            return true;
+        }
+    };
 
     private void search() {
         final Animation rotateAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);
@@ -156,6 +221,8 @@ public class Foodlette extends AppCompatActivity {
                                 int randomNumber = rand.nextInt(places.getBusinesses().size());
                                 business = places.getBusinesses().get(randomNumber);
 
+                                sendBusinessInfo(business);
+
                             } catch (Exception e) {
                                 System.out.println("Error, could not parse returned data!");
                                 System.out.println(rawData);
@@ -170,23 +237,48 @@ public class Foodlette extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        sendBusinessInfo(business);
+                        intentPutExtra();
                     }
                 }, 1001);
             }
         });
     }
 
+    private void intentPutExtra() {
+        Intent intent = new Intent(Foodlette.this, result.class);
+        intent.putExtra("biz", business);
+        intent.putExtra("_name", name);
+        intent.putExtra("_locationInfo", locationInfo);
+        intent.putExtra("_url", url);
+        intent.putExtra("_ratingUrl", ratingUrl);
+        intent.putExtra("_lat", latitude);
+        intent.putExtra("_lng", longitude);
+        intent.putExtra("_snippet", snippet);
+        intent.putExtra("_mobileUrl", mobileUrl);
+        intent.putExtra("rouletteMode", rouletteMode);
+        intent.putExtra("loaded", loaded);
+        if (loaded) {
+            if (business.getId().equals(places.getBusinesses().get(places.getBusinesses().size() - 1).getId())) {
+                intent.putExtra("bulletLanded", true);
+            }
+        }
+        startActivityForResult(intent, 1);
+    }
+
     private void distanceBar() {
         // Filter for radius
         distanceSeekBar = (SeekBar)findViewById(R.id.distance);
         distanceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            //Inside navigation drawer
             TextView textView = (TextView) findViewById(R.id.distanceCovered);
+            //Inside the main activity
+            TextView tvDistance = (TextView) findViewById(R.id.distanceCoveredInActivity);
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
 
                 textView.setText("Distance within: " + progressValue + " miles");
+                tvDistance.setText("Distance within: " + progressValue + " miles");
                 distance = progressValue / (0.00062137);
             }
 
@@ -340,24 +432,6 @@ public class Foodlette extends AppCompatActivity {
         if (phone == null) phone = "No number";
         locationInfo = address + "\n" + city + "\n" + state + ", " + zip + "\n" + phone + "\n";
 
-        Intent intent = new Intent(Foodlette.this, result.class);
-        intent.putExtra("biz", business);
-        intent.putExtra("_name", name);
-        intent.putExtra("_locationInfo", locationInfo);
-        intent.putExtra("_url", url);
-        intent.putExtra("_ratingUrl", ratingUrl);
-        intent.putExtra("_lat", latitude);
-        intent.putExtra("_lng", longitude);
-        intent.putExtra("_snippet", snippet);
-        intent.putExtra("_mobileUrl", mobileUrl);
-        intent.putExtra("rouletteMode", rouletteMode);
-        intent.putExtra("loaded", loaded);
-        if(loaded){
-            if(business.getId().equals(places.getBusinesses().get(places.getBusinesses().size()-1).getId())){
-                intent.putExtra("bulletLanded", true);
-            }
-        }
-        startActivityForResult(intent, 1);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -377,9 +451,11 @@ public class Foodlette extends AppCompatActivity {
         if (id == R.id.action_forward) {
             if(business != null){
                 sendBusinessInfo(business);
+                intentPutExtra();
             }
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 }
