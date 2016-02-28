@@ -1,12 +1,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.jonathan.cs499foodlette.Foodlette">
+    tools:context="com.CS499.jonathan.cs499foodlette.Foodlette">
 
     <item
         android:id="@+id/action_forward"
         android:icon="@drawable/ic_arrow_forward_white_24dp"
-        android:orderInCategory="100"
+        android:orderInCategory="101"
         android:title="@string/action_forward"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/fav_drawer"
+        android:icon="@drawable/ic_favorite_white_24dp"
+        android:orderInCategory="100"
+        android:title="Favorites"
         app:showAsAction="always" />
 </menu>

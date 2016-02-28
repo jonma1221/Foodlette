@@ -1,6 +1,8 @@
-package com.example.jonathan.cs499foodlette;
+package com.CS499.jonathan.cs499foodlette;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -41,11 +44,30 @@ public class BusinessAdapter extends ArrayAdapter<Business>{
             @Override
             public void onClick(View v) {
                 business.remove(position);
+                saveFavorites();
                 notifyDataSetChanged();
             }
         });
-        Picasso.with(getContext()).load(business.get(position).getImage_url()).into(imgIcon);
-        txtTitle.setText(business.get(position).getName());
+
+        Picasso.with(getContext()).load(business.get(position).getImage_url().substring(0,
+                    business.get(position).getImage_url().length() - 6) + "o.jpg").into(imgIcon);
+        String locationInfo =
+            business.get(position).getName() + "\n" +
+            business.get(position).getLocation().getAddress().toString().substring(1, business.get(position).
+                                   getLocation().getAddress().toString().length() - 1) + "\n" +
+            business.get(position).getLocation().getCity() + "\n" +
+            business.get(position).getLocation().getState_code() + "," +
+            business.get(position).getLocation().getPostal_code();
+        txtTitle.setText(locationInfo);
         return row;
+    }
+    private void saveFavorites() {
+        SharedPreferences preferences = context.getSharedPreferences("favorites", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        Gson gson = new Gson();
+        String jsonFavorites = gson.toJson(business);
+        editor.putString("jsonFavorites",jsonFavorites);
+        editor.commit();
+
     }
 }

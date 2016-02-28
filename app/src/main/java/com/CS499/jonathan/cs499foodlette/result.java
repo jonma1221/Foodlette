@@ -1,4 +1,4 @@
-package com.example.jonathan.cs499foodlette;
+package com.CS499.jonathan.cs499foodlette;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -56,9 +56,10 @@ public class result extends AppCompatActivity {
         /*** Tab Stuff ***/
         TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
         tabHost.setup();
+
         TabHost.TabSpec tabSpec = tabHost.newTabSpec("foodInfo");
+        tabSpec.setIndicator("Location",getResources().getDrawable(R.drawable.ic_drive_eta_white_24dp));
         tabSpec.setContent(R.id.foodInfo);
-        tabSpec.setIndicator("Destination");
         tabHost.addTab(tabSpec);
 
         tabSpec = tabHost.newTabSpec("webInfo");

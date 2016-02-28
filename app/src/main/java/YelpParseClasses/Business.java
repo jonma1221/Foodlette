@@ -3,7 +3,7 @@ package YelpParseClasses;
 import java.io.Serializable;
 import java.util.List;
 
-public class Business implements Serializable{
+public class Business implements Serializable,Comparable<Business> {
 	private String id;
 	private String name;
 	private String image_url;
@@ -133,5 +133,10 @@ public class Business implements Serializable{
 	}
 	public void setMenu_provider(String menu){
 		menu_provider = menu;
+	}
+
+	@Override
+	public int compareTo(Business another) {
+		return name.compareTo(another.name);
 	}
 }

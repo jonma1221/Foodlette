@@ -1,15 +1,17 @@
-package com.example.jonathan.cs499foodlette;
-
-import android.app.FragmentManager;
+package com.CS499.jonathan.cs499foodlette;
+import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
+import android.os.PersistableBundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -31,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
@@ -39,11 +42,12 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Random;
 
-import Fragments.FragmentOne;
-import Fragments.FragmentTwo;
 import YelpParseClasses.Business;
 import YelpParseClasses.Search;
 import YelpParseClasses.YelpV2API;
@@ -84,30 +88,28 @@ public class Foodlette extends AppCompatActivity {
     private boolean loaded = false, rouletteMode, toggle = false;
 
     // Favorites drawer
+    private DrawerLayout fDrawerLayout;
     private ListView mDrawerList;
     private ArrayList<Business> favoriteList = new ArrayList<Business>();
     private BusinessAdapter mAdapter;
-
-    // Navigation drawer
-    /*private ListView navView;
-    ArrayAdapter<String> listAdapter;
-    String fragmentArray[] = {"FRAGMENT 1", "FRAGMENT 2"};
-    private DrawerLayout drawerLayout;*/
+    private ActionBarDrawerToggle favoriteDrawerToggle;
 
     // Navigation drawer part 2
     private DrawerLayout mDrawerLayout;
-    private ListView drawerList;
-    private ListView drawerListR;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private LinearLayout leftDrawer;
-    private String[] drawerItems = {"FRAGMENT 1", "FRAGMENT 2"};
+    private Toolbar toolbar;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+
+    private View mLeftDrawerView;
+    private View mRightDrawerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_foodlette);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        retrieveFavorites();
 
         search();
 
@@ -117,57 +119,92 @@ public class Foodlette extends AppCompatActivity {
 
         foodCategoryFilter();
 
-        favorites();
+        favoritesDrawer();
 
         //TESTING NAVIGATION DRAWER
         startNavigationDrawer();
-
-
-
-
-
-
-
 
     }
 
     private void startNavigationDrawer() {
         //NAVIGATION DRAWER
+
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mLeftDrawerView = findViewById(R.id.leftDrawer);
+        mRightDrawerView = findViewById(R.id.navList);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
 
-        /*mDrawerList = (ListView) findViewById(R.id.leftNav);
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, drawerItems));*/
-
-        //findViewById(R.id.distance).setOnTouchListener(seekBarTouchListener);
-
-    }
-
-    private View.OnTouchListener seekBarTouchListener = new ListView.OnTouchListener() {
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            int action = event.getAction();
-            switch (action) {
-                case MotionEvent.ACTION_DOWN:
-                    //Disallow Drawer to intercept touch events.
-                    v.getParent().requestDisallowInterceptTouchEvent(true);
-                    break;
-                case MotionEvent.ACTION_UP:
-                    //Allow Drawer to intercept touch events.
-                    v.getParent().requestDisallowInterceptTouchEvent(false);
-                    break;
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                if (drawerView.equals(mLeftDrawerView)) {
+                    actionBarDrawerToggle.syncState();
+                }
             }
 
-            // Handle seekbar touch events.
-            v.onTouchEvent(event);
-            return true;
-        }
-    };
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                if (drawerView.equals(mLeftDrawerView)) {
+                    actionBarDrawerToggle.syncState();
+                }
+            }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+        };
+        mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+    }
+
+    private void favoritesDrawer() {
+        // Navigation Drawer for favorites
+        View header = (View)getLayoutInflater().inflate(R.layout.layout_favorite_header, null);
+        mDrawerList = (ListView)findViewById(R.id.navList);
+        mDrawerList.addHeaderView(header);
+        ImageButton deleteAll = (ImageButton) header.findViewById(R.id.deleteAll);
+        deleteAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(Foodlette.this, "Favorite's drawer emptied", Toast.LENGTH_SHORT).show();
+                favoriteList.clear();
+                saveFavorites();
+                mAdapter.notifyDataSetChanged();
+            }
+        });
+
+        ImageButton sort = (ImageButton) header.findViewById(R.id.sort);
+        sort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(Foodlette.this, "Favorite's drawer sorted", Toast.LENGTH_SHORT).show();
+                Collections.sort(favoriteList);
+                saveFavorites();
+                mAdapter.notifyDataSetChanged();
+            }
+        });
+
+        mAdapter = new BusinessAdapter(this, R.layout.layout_favorite, favoriteList);
+        mDrawerList.setAdapter(mAdapter);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                if (position == 0) {
+                    return;
+                }
+                Toast.makeText(Foodlette.this, favoriteList.get(position - 1).getName(), Toast.LENGTH_SHORT).show();
+                business = favoriteList.get(position - 1);
+                sendBusinessInfo(favoriteList.get(position - 1));
+                intentPutExtra();
+            }
+        });
+    }
 
     private void search() {
         final Animation rotateAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);
         // Initial location
         editLocation = (EditText) findViewById(R.id.location);
+
         // Search for restaurant
         searchButton = (ImageButton)findViewById(R.id.search);
         searchButton.setOnClickListener(new View.OnClickListener() {
@@ -177,7 +214,6 @@ public class Foodlette extends AppCompatActivity {
                     location = editLocation.getText().toString();
                     Log.i("info", "Initial location: " + location);
                 } else {
-                    Log.i("info", "Empty");
                     Toast.makeText(getApplicationContext(), R.string.verifyLocation, Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -220,7 +256,6 @@ public class Foodlette extends AppCompatActivity {
                                 Random rand = new Random();
                                 int randomNumber = rand.nextInt(places.getBusinesses().size());
                                 business = places.getBusinesses().get(randomNumber);
-
                                 sendBusinessInfo(business);
 
                             } catch (Exception e) {
@@ -233,10 +268,19 @@ public class Foodlette extends AppCompatActivity {
                     }
                 }.start();
 
+                if(places == null) {
+                    Toast.makeText(Foodlette.this, "No results found", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        if(places.getTotal() == 0){
+                            Toast.makeText(Foodlette.this, "No results found", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         intentPutExtra();
                     }
                 }, 1001);
@@ -258,8 +302,10 @@ public class Foodlette extends AppCompatActivity {
         intent.putExtra("rouletteMode", rouletteMode);
         intent.putExtra("loaded", loaded);
         if (loaded) {
-            if (business.getId().equals(places.getBusinesses().get(places.getBusinesses().size() - 1).getId())) {
-                intent.putExtra("bulletLanded", true);
+            if(places != null) {
+                if (business.getId().equals(places.getBusinesses().get(places.getBusinesses().size() - 1).getId())) {
+                    intent.putExtra("bulletLanded", true);
+                }
             }
         }
         startActivityForResult(intent, 1);
@@ -271,14 +317,11 @@ public class Foodlette extends AppCompatActivity {
         distanceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             //Inside navigation drawer
             TextView textView = (TextView) findViewById(R.id.distanceCovered);
-            //Inside the main activity
-            TextView tvDistance = (TextView) findViewById(R.id.distanceCoveredInActivity);
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
 
-                textView.setText("Distance within: " + progressValue + " miles");
-                tvDistance.setText("Distance within: " + progressValue + " miles");
+                textView.setText(progressValue + " miles");
                 distance = progressValue / (0.00062137);
             }
 
@@ -290,6 +333,28 @@ public class Foodlette extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
+            }
+        });
+
+        distanceSeekBar.setOnTouchListener(new ListView.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Disallow Drawer to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        // Allow Drawer to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+
+                // Handle seekbar touch events.
+                v.onTouchEvent(event);
+                return true;
             }
         });
     }
@@ -312,7 +377,7 @@ public class Foodlette extends AppCompatActivity {
                     rouletteMode = true;
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.rouletteOff, Toast.LENGTH_SHORT).show();
-                    searchButton.setBackgroundResource(R.drawable.roullete);
+                    searchButton.setBackgroundResource(R.drawable.roulette);
                     instruction1.setVisibility(View.INVISIBLE);
                     loadImg.setVisibility(View.INVISIBLE);
                     instruction2.setVisibility(View.INVISIBLE);
@@ -344,25 +409,6 @@ public class Foodlette extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
-            }
-        });
-    }
-
-    private void favorites() {
-        // Navigation Drawer for favorites
-        View header = (View)getLayoutInflater().inflate(R.layout.layout_favorite_header, null);
-        mDrawerList = (ListView)findViewById(R.id.navList);
-        mDrawerList.addHeaderView(header);
-        mAdapter = new BusinessAdapter(this, R.layout.layout_favorite, favoriteList);
-        mDrawerList.setAdapter(mAdapter);
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                if (position == 0) {
-                    return;
-                }
-                Toast.makeText(Foodlette.this, favoriteList.get(position - 1).getName(), Toast.LENGTH_SHORT).show();
-                sendBusinessInfo(favoriteList.get(position - 1));
             }
         });
     }
@@ -401,6 +447,7 @@ public class Foodlette extends AppCompatActivity {
     }
     private void addDrawerItems(Business business) {
         boolean found = false;
+
         for(int i = 0; i < favoriteList.size(); i++){
             if(favoriteList.get(i).getId().equals(business.getId())){
                 Toast.makeText(Foodlette.this, "Already in your favorite drawer", Toast.LENGTH_SHORT).show();
@@ -410,8 +457,32 @@ public class Foodlette extends AppCompatActivity {
         if(!found){
             Toast.makeText(Foodlette.this, "Added to your favorite's !", Toast.LENGTH_SHORT).show();
             favoriteList.add(business);
+            saveFavorites();
             mAdapter.notifyDataSetChanged();
         }
+    }
+
+    public void saveFavorites() {
+        SharedPreferences preferences = getSharedPreferences("favorites", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        Gson gson = new Gson();
+        String jsonFavorites = gson.toJson(favoriteList);
+        editor.putString("jsonFavorites",jsonFavorites);
+        editor.commit();
+    }
+    private void retrieveFavorites() {
+        SharedPreferences preferences = getSharedPreferences("favorites", Context.MODE_PRIVATE);
+        String jsonFavorites = preferences.getString("jsonFavorites", "");
+        Type type = new TypeToken<ArrayList<Business>>(){}.getType();
+        Gson gson = new Gson();
+
+        LinkedList<Business> temp;
+        Log.i("jsonFavorites", jsonFavorites);
+        if(jsonFavorites.isEmpty()) temp = new LinkedList<Business>();
+        else {
+            temp = gson.fromJson(jsonFavorites,type);
+        }
+        favoriteList = new ArrayList<Business>(temp);
     }
     private void sendBusinessInfo(Business business) {
         name = business.getName();
@@ -455,6 +526,13 @@ public class Foodlette extends AppCompatActivity {
             }
         }
 
+        if (id == R.id.fav_drawer) {
+           if (mDrawerLayout.isDrawerOpen(mRightDrawerView)) {
+               mDrawerLayout.closeDrawer(mRightDrawerView);
+           } else {
+               mDrawerLayout.openDrawer(mRightDrawerView);
+           }
+        }
         return super.onOptionsItemSelected(item);
     }
 

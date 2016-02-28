@@ -9,4 +9,6 @@
     <color name="gray">#EEEEEE</color>
     <color name="black">#000000</color>
     <color name="indicator">#ec5a7f</color>
+    <color name="indigo100">#C5CAE9</color>
+
 </resources>

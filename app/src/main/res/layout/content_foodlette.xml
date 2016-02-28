@@ -5,135 +5,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.jonathan.cs499foodlette.Foodlette"
+    tools:context="com.CS499.jonathan.cs499foodlette.Foodlette"
     tools:showIn="@layout/activity_foodlette"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
-        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/food_background" >
+        android:layout_height="match_parent" >
 
-        <LinearLayout
-            android:layout_gravity="center"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/linearLayout"
-            android:orientation="vertical">
+            android:text="Spin the wheel after selecting your preferences!"
+            android:textAlignment="center"
+            android:layout_marginTop="62dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:typeface="normal" />
 
-            <ImageButton
-                android:id="@+id/search"
-                android:layout_weight="5"
-                android:layout_width="220dp"
-                android:layout_height="180dp"
-                android:layout_gravity="center"
-                android:background="@drawable/foodlette_icon" />
+        <ImageButton
+            android:id="@+id/search"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:background="@drawable/roulette"
+            android:backgroundTint="@color/colorPrimary"
+            android:layout_marginTop="88dp"
+            android:layout_centerInParent="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
 
-            <TextView
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="30dp"
-                android:textSize="29dp"
-                android:text="Choose your preferences" />
-
-
-            <!--<EditText
-                android:id="@+id/location"
-                android:paddingTop="20dp"
-                android:hint="Address, city, or zip"
-                android:textSize="15dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <SeekBar
-                android:id="@+id/distance"
-                android:layout_weight="2"
-                android:paddingTop="10dp"
-                android:layout_gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="25"/>-->
-
-            <TextView
-                android:id="@+id/distanceCoveredInActivity"
-                android:text="Distance within: 0 miles"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <!--<Spinner
-                    android:id="@+id/category"
-                    android:spinnerMode="dropdown"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"></Spinner>-->
-                <Switch
-                    android:id="@+id/roullete"
-                    android:text="Food Russian Roulette Mode "
-                    android:paddingTop="20dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:checked="false"
-                    android:clickable="true" />
-
-                    <LinearLayout
-                        android:layout_marginLeft="5dp"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:visibility="invisible"
-                            android:id="@+id/instruction"
-                            android:layout_marginTop="1dp"
-                            android:text="Press "
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                        <ImageView
-                            android:visibility="invisible"
-                            android:id="@+id/loadImg"
-                            android:layout_weight=".15"
-                            android:background="@drawable/load_bullet"
-                            android:layout_width="0dp"
-                            android:layout_height="20dp" />
-                        <TextView
-                            android:visibility="invisible"
-                            android:id="@+id/instructionContinued"
-                            android:layout_marginTop="1dp"
-                            android:layout_weight="1"
-                            android:text=" to load restaurant"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                    </LinearLayout>
-
-            </LinearLayout>
-        </LinearLayout>
     </RelativeLayout>
 
     <!-- The navigation drawer on the right side -->
     <ListView
         android:id="@+id/navList"
-        android:layout_width="250dp"
+        android:divider="@null"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="right"
-        android:background="@color/white"/>
-
+        android:background="@color/gray"/>
 
     <!-- The navigation drawer on the left side -->
     <LinearLayout
         android:id="@+id/leftDrawer"
+        android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
@@ -141,47 +59,206 @@
         android:visibility="visible"
         android:background="@color/white">
 
-        <EditText
-            android:layout_margin="30dp"
-            android:id="@+id/location"
-            android:paddingTop="20dp"
-            android:hint="Address, city, or zip"
-            android:textSize="15sp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <SeekBar
-            android:layout_margin="30dp"
-            android:id="@+id/distance"
-            android:paddingTop="20dp"
+        <TextView android:id="@+id/txtHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="25"/>
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textSize="22sp"
+            android:textColor="#FFFFFF"
+            android:padding="10dp"
+            android:text="Adjust your preferences"
+            android:background="?attr/colorPrimary" />
+        <View style="@style/Divider"/>
 
-        <TextView
-            android:layout_margin="30dp"
-            android:id="@+id/distanceCovered"
-            android:text="Distance within: 0 miles"
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <!--Initial location-->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_marginTop="30dp"
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:background="@drawable/ic_edit_location_white_24dp"/>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="Enter your location: "
+                    android:textSize="18sp"
+                    />
+
+                <EditText
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:id="@+id/location"
+                    android:paddingTop="20dp"
+                    android:hint="Address, city, or zip"
+                    android:textSize="15sp"
+                    android:textStyle="italic"
+                    android:singleLine="true"
+                    android:imeOptions="actionDone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View style="@style/Divider"/>
+
+        <!--Radius slider-->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:background="@drawable/ic_drive_eta_white_24dp"/>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="Specify a distance(mi): "
+                    android:textSize="18sp"/>
+                <SeekBar
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/distance"
+                    android:paddingTop="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:progressDrawable="@drawable/progressbar"
+                    android:max="25"/>
+
+                <TextView
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/distanceCovered"
+                    android:text="0 miles"
+                    android:textStyle="bold"
+                    android:textSize="22sp"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View style="@style/Divider"/>
+
+        <!--Category spinner-->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:background="@drawable/ic_restaurant_white_24dp"/>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Choose a category: "
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    />
+
+                <Spinner
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:id="@+id/category"
+                    android:spinnerMode="dropdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"></Spinner>
+            </LinearLayout>
+        </LinearLayout>
+
+        <View style="@style/Divider"/>
+
+        <!--Roulette mode-->
+        <Switch
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
+            android:id="@+id/roullete"
+            android:text="Food Russian Roulette Mode "
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="(OPTIONAL) Choose your category: " />
+            android:textStyle="bold"
+            android:checked="false"
+            android:clickable="true" />
 
-        <Spinner
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:id="@+id/category"
-            android:spinnerMode="dropdown"
+        <LinearLayout
+            android:layout_marginLeft="45dp"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></Spinner>
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:visibility="invisible"
+                android:id="@+id/instruction"
+                android:layout_marginTop="1dp"
+                android:text="Press "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:visibility="invisible"
+                android:id="@+id/loadImg"
+                android:layout_weight=".15"
+                android:background="@drawable/load_bullet"
+                android:layout_width="0dp"
+                android:layout_height="20dp" />
+            <TextView
+                android:visibility="invisible"
+                android:id="@+id/instructionContinued"
+                android:layout_marginTop="1dp"
+                android:layout_weight="1"
+                android:text=" to load restaurant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

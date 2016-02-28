@@ -2,19 +2,41 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
+    android:background="@color/colorPrimary"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <TextView android:id="@+id/txtHeader"
-        android:layout_weight="1"
+    <LinearLayout
+        android:descendantFocusability="blocksDescendants"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:textStyle="bold"
-        android:textSize="22sp"
-        android:textColor="#FFFFFF"
-        android:padding="10dp"
-        android:text="Favorites"
-        android:background="?attr/colorPrimary" />
+        android:layout_height="wrap_content">
+        <TextView android:id="@+id/txtHeader"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textSize="22sp"
+            android:textColor="#FFFFFF"
+            android:padding="10dp"
+            android:text="Favorites" />
+
+        <ImageButton
+            android:id="@+id/sort"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/ic_sort_white_24dp"/>
+
+        <ImageButton
+            android:id="@+id/deleteAll"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/ic_delete_sweep_white_24dp"/>
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.example.jonathan.cs499foodlette;
+package com.CS499.jonathan.cs499foodlette;
 
 import org.junit.Test;
 
