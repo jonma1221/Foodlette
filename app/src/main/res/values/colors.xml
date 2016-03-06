@@ -3,12 +3,13 @@
     <color name="colorPrimary">#02bdd4</color>
     <color name="colorPrimaryDark">#02a5b9</color>
     <color name="colorAccent">#ff00ff</color>
-    <color name="red">#ffff0000</color>
+    <color name="red">#EF5350</color>
     <color name="green">#C6FF00</color>
     <color name="white">#FFFFFF</color>
     <color name="gray">#EEEEEE</color>
     <color name="black">#000000</color>
     <color name="indicator">#ec5a7f</color>
     <color name="indigo100">#C5CAE9</color>
-
+    <color name="purpleA400">#D500F9</color>
+    #EA80FC
 </resources>

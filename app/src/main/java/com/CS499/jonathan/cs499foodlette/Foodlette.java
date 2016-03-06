@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -58,11 +59,9 @@ public class Foodlette extends AppCompatActivity {
     private final String TOKEN = "gCPhJx8GzdO88RsHkbvv5eWozqLASiMB";
     private final String TOKEN_SECRET = "NOuj5IY2gfLpBNz5mg9h0HVfBYg";
 
-    private ImageButton searchButton;
-    private EditText editLocation;
-    private SeekBar distanceSeekBar;
-
+    Random rand = new Random();
     Search places;
+
     // Fields
     private Business business,loadedBusiness, favoritedBusiness;
     private String name;
@@ -80,6 +79,10 @@ public class Foodlette extends AppCompatActivity {
     private double latitude, longitude;
 
     //filters
+    private ImageButton searchButton;
+    private EditText editLocation;
+    private SeekBar distanceSeekBar;
+    private Spinner mySpinner;
     private String location;
     private String category;
     private double distance = 0;
@@ -102,6 +105,11 @@ public class Foodlette extends AppCompatActivity {
     private View mLeftDrawerView;
     private View mRightDrawerView;
 
+    //History
+    private ArrayList<Business> historyList = new ArrayList<Business>();
+    private ViewPager viewPager;
+    private SwipeAdapter swipeAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +120,10 @@ public class Foodlette extends AppCompatActivity {
         retrieveFavorites();
 
         search();
+
+        viewPager = (ViewPager)findViewById(R.id.history);
+        swipeAdapter = new SwipeAdapter(this, historyList);
+        viewPager.setAdapter(swipeAdapter);
 
         distanceBar();
 
@@ -124,8 +136,39 @@ public class Foodlette extends AppCompatActivity {
         //TESTING NAVIGATION DRAWER
         startNavigationDrawer();
 
-    }
+        ImageButton openPreferences = (ImageButton)findViewById(R.id.openPreferences);
+        openPreferences.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
+        });
+
+        ImageButton openFavorites = (ImageButton)findViewById(R.id.openFavorites);
+        openFavorites.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if (mDrawerLayout.isDrawerOpen(mRightDrawerView)) {
+                    mDrawerLayout.closeDrawer(mRightDrawerView);
+                } else {
+                    mDrawerLayout.openDrawer(mRightDrawerView);
+                }
+            }
+        });
+
+        ImageButton shuffle = (ImageButton)findViewById(R.id.shuffle);
+        shuffle.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                int randomNumber = rand.nextInt(25);
+                distanceSeekBar.setProgress(randomNumber);
+                distance = randomNumber / (0.00062137);
+
+                randomNumber = rand.nextInt(27);
+                mySpinner.setSelection(randomNumber);
+            }
+        });
+    }
     private void startNavigationDrawer() {
         //NAVIGATION DRAWER
 
@@ -246,6 +289,10 @@ public class Foodlette extends AppCompatActivity {
                             String rawData = response.getBody();
                             try {
                                 places = new Gson().fromJson(rawData, Search.class);
+                                if(places.getTotal()==0) {
+                                    Toast.makeText(Foodlette.this, "No results found", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
                                 if (loaded) {
                                     Log.i("info", "Loaded is true");
                                     Log.i("info", loadedBusiness.getName());
@@ -253,10 +300,15 @@ public class Foodlette extends AppCompatActivity {
                                 } else Log.i("info", "Loaded is false");
                                 Log.i("info", "Your search found " + places.getTotal() + " results.\n");
                                 Log.i("info", "Yelp returned " + places.getBusinesses().size() + " businesses in this request.\n");
-                                Random rand = new Random();
+
                                 int randomNumber = rand.nextInt(places.getBusinesses().size());
                                 business = places.getBusinesses().get(randomNumber);
                                 sendBusinessInfo(business);
+
+                                if(business != null){
+                                    historyList.add(business);
+                                    swipeAdapter.notifyDataSetChanged();
+                                }
 
                             } catch (Exception e) {
                                 System.out.println("Error, could not parse returned data!");
@@ -268,16 +320,11 @@ public class Foodlette extends AppCompatActivity {
                     }
                 }.start();
 
-                if(places == null) {
-                    Toast.makeText(Foodlette.this, "No results found", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if(places.getTotal() == 0){
+                        if(places == null || places.getTotal() == 0){
                             Toast.makeText(Foodlette.this, "No results found", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -320,7 +367,6 @@ public class Foodlette extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
-
                 textView.setText(progressValue + " miles");
                 distance = progressValue / (0.00062137);
             }
@@ -390,7 +436,7 @@ public class Foodlette extends AppCompatActivity {
 
     private void foodCategoryFilter() {
         // Filter for food category
-        Spinner mySpinner = (Spinner)findViewById(R.id.category);
+        mySpinner = (Spinner)findViewById(R.id.category);
         String[] items = new String[]{"bagels","bakeries","beer_and_wine",
                                       "bubbletea", "burgers", "bbq", "buffets", "cheesesteaks",
                                       "coffee","cupcakes","delicatessen","desserts","donuts",
@@ -528,10 +574,10 @@ public class Foodlette extends AppCompatActivity {
 
         if (id == R.id.fav_drawer) {
            if (mDrawerLayout.isDrawerOpen(mRightDrawerView)) {
-               mDrawerLayout.closeDrawer(mRightDrawerView);
-           } else {
-               mDrawerLayout.openDrawer(mRightDrawerView);
-           }
+                mDrawerLayout.closeDrawer(mRightDrawerView);
+            } else {
+                mDrawerLayout.openDrawer(mRightDrawerView);
+            }
         }
         return super.onOptionsItemSelected(item);
     }
